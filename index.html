@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Assistant</title>
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Protest+Guerrilla&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Merriweather", serif;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            flex-direction: column;
+            font-family: "Merriweather", serif;
+            padding: 20px;
+        }
+
+        #logo {
+            width: 20vw;
+            max-width: 150px;
+        }
+
+        h1 {
+            color: aliceblue;
+            font-family: "Protest Guerrilla", sans-serif;
+            letter-spacing: 1px;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        #voice {
+            width: 100px;
+            display: none;
+        }
+
+
+        #btn {
+            width: 40%;
+            width: max-content;
+            background: linear-gradient(to right, rgb(255, 105, 180), rgb(70, 130, 180));
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 182, 193, 0.4), 0 0 10px rgba(135, 206, 235, 0.4);
+            border: none;
+            transition: all 0.5s;
+            cursor: pointer;
+        }
+
+        #btn:hover {
+            box-shadow: 0 0 20px rgba(255, 182, 193, 0.4), 0 0 20px rgba(135, 206, 235, 0.4);
+            letter-spacing: 1px;
+        }
+
+        #commands {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .command-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 15px;
+            font-size: 0.8rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            text-align: center;
+            white-space: normal;
+            word-wrap: break-word;
+            margin: 0 4px;
+            letter-spacing: 1px;
+        }
+
+        .command-btn:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        #news-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            width: 95%;
+            margin: 0 auto;
+            text-align: left;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            color: aliceblue;
+            display: none;
+        }
+
+        #news-container ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #news-container li {
+            background-color: rgba(255, 255, 255, 0.2);
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #news-container li a {
+            color: aliceblue;
+            text-decoration: none;
+        }
+
+        #news-container li:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* News section header and refresh icon */
+        #news-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        #refresh-icon {
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+            transition: transform 0.3s;
+            filter: invert(100%);
+        }
+
+        #refresh-icon:hover {
+            transform: rotate(360deg);
+        }
+
+
+        #definition {
+            background: transparent;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            max-width: 95%;
+            margin: 20px auto;
+            font-family: "Merriweather", serif;
+            color: #f0f8ff;
+            text-align: left;
+        }
+
+        #definition h3 {
+            font-size: 1.5em;
+            margin: 15px 0;
+            color: #fff;
+        }
+
+        #definition p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        #definition strong {
+            color: #ffcccb;
+        }
+
+
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            #logo {
+                width: 30%;
+            }
+
+            #btn {
+                width: 70%;
+                font-size: 1rem;
+                max-width: 300px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            #commands {
+                font-size: 0.8rem;
+            }
+
+            .command-btn {
+                min-width: 90px;
+                padding: 8px 12px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <img src="logo.png" alt="logo" id="logo">
+    <h1>Your Virtual Assistant</h1>
+
+    <!-- Marquee sections for commands -->
+    <div id="commands">
+        <marquee behavior="scroll" direction="left" scrollamount="7" onmouseover="this.stop()"
+            onmouseout="this.start()">
+            <button class="command-btn" data-command="what is apple">"What is apple?" - Get the meaning of
+                "apple"</button>
+            <button class="command-btn" data-command="hello">"Hello" or "Hey" - Greet the assistant</button>
+            <button class="command-btn" data-command="translate this to french good morning">"Translate this to French"
+                - "Good morning"</button>
+            <button class="command-btn" data-command="news">"News" - Get the latest news</button>
+            <button class="command-btn" data-command="translate this to japanese what is your name?">"Translate this to
+                Japanese" - "What is your name?"</button>
+            <button class="command-btn" data-command="open youtube">"Open YouTube" - Open YouTube</button>
+            <button class="command-btn" data-command="what is democracy">"What is democracy?" - Get the meaning of
+                "democracy"</button>
+            <button class="command-btn" data-command="translate this to arabic please help me">"Translate this to
+                Arabic" - "Please help me"</button>
+            <button class="command-btn" data-command="open google">"Open Google" - Open Google</button>
+            <button class="command-btn" data-command="who are you">"Who are you?" - Learn about the assistant</button>
+            <button class="command-btn" data-command="time">"Time" - Get the current time</button>
+            <button class="command-btn" data-command="search">"Search" - Search for something</button>
+            <button class="command-btn" data-command="set reminder">"Set Reminder" - Add a reminder</button>
+            <button class="command-btn" data-command="calculator">"Calculator" - Use the calculator</button>
+            <button class="command-btn" data-command="weather">"Weather" - Get weather updates</button>
+            <button class="command-btn" data-command="translate this to spanish how are you?">"Translate this to
+                Spanish" - "How are you?"</button>
+            <button class="command-btn" data-command="quote">"Quote" - Get an inspirational quote</button>
+            <button class="command-btn" data-command="joke">"Joke" - Hear a joke</button>
+            <button class="command-btn" data-command="open google maps">"Open Google Maps" - Open Google Maps</button>
+            <button class="command-btn" data-command="play music">"Play Music" - Play some tunes</button>
+            <button class="command-btn" data-command="open youtube">"Open YouTube" - Open YouTube</button>
+        </marquee>
+
+        <marquee behavior="scroll" direction="right" scrollamount="5" onmouseover="this.stop()"
+            onmouseout="this.start()">
+            <button class="command-btn" data-command="hello">"Hello" or "Hey" - Greet the assistant</button>
+            <button class="command-btn" data-command="who are you">"Who are you?" - Learn about the assistant</button>
+            <button class="command-btn" data-command="open youtube">"Open YouTube" - Open YouTube</button>
+            <button class="command-btn" data-command="open google">"Open Google" - Open Google</button>
+            <button class="command-btn" data-command="weather">"Weather" - Get weather updates</button>
+            <button class="command-btn" data-command="news">"News" - Get the latest news</button>
+            <button class="command-btn" data-command="time">"Time" - Get the current time</button>
+            <button class="command-btn" data-command="date">"Date" - Get the current date</button>
+            <button class="command-btn" data-command="set reminder">"Set Reminder" - Add a reminder</button>
+            <button class="command-btn" data-command="joke">"Joke" - Hear a joke</button>
+            <button class="command-btn" data-command="quote">"Quote" - Get an inspirational quote</button>
+            <button class="command-btn" data-command="search">"Search" - Search for something</button>
+            <button class="command-btn" data-command="play music">"Play Music" - Play some tunes</button>
+            <button class="command-btn" data-command="calculator">"Calculator" - Use the calculator</button><button
+                class="command-btn" data-command="what is apple">"What is apple?" - Get the meaning of "apple"</button>
+            <button class="command-btn" data-command="hello">"Hello" or "Hey" - Greet the assistant</button>
+            <button class="command-btn" data-command="translate this to french good morning">"Translate this to French"
+                - "Good morning"</button>
+            <button class="command-btn" data-command="news">"News" - Get the latest news</button>
+            <button class="command-btn" data-command="translate this to japanese what is your name?">"Translate this to
+                Japanese" - "What is your name?"</button>
+            <button class="command-btn" data-command="open youtube">"Open YouTube" - Open YouTube</button>
+            <button class="command-btn" data-command="what is democracy">"What is democracy?" - Get the meaning of
+                "democracy"</button>
+            <button class="command-btn" data-command="translate this to arabic please help me">"Translate this to
+                Arabic" - "Please help me"</button>
+            <button class="command-btn" data-command="open google">"Open Google" - Open Google</button>
+            <button class="command-btn" data-command="who are you">"Who are you?" - Learn about the assistant</button>
+            <button class="command-btn" data-command="time">"Time" - Get the current time</button>
+            <button class="command-btn" data-command="search">"Search" - Search for something</button>
+            <button class="command-btn" data-command="set reminder">"Set Reminder" - Add a reminder</button>
+            <button class="command-btn" data-command="calculator">"Calculator" - Use the calculator</button>
+            <button class="command-btn" data-command="weather">"Weather" - Get weather updates</button>
+            <button class="command-btn" data-command="translate this to spanish how are you?">"Translate this to
+                Spanish" - "How are you?"</button>
+            <button class="command-btn" data-command="quote">"Quote" - Get an inspirational quote</button>
+            <button class="command-btn" data-command="joke">"Joke" - Hear a joke</button>
+            <button class="command-btn" data-command="open google maps">"Open Google Maps" - Open Google Maps</button>
+            <button class="command-btn" data-command="play music">"Play Music" - Play some tunes</button>
+            <button class="command-btn" data-command="open youtube">"Open YouTube" - Open YouTube</button>
+        </marquee>
+        <marquee behavior="scroll" direction="left" scrollamount="6" onmouseover="this.stop()"
+            onmouseout="this.start()">
+            <button class="command-btn" data-command="what is apple">"What is apple?" - Get the meaning of
+                "apple"</button>
+            <button class="command-btn" data-command="hello">"Hello" or "Hey" - Greet the assistant</button>
+            <button class="command-btn" data-command="translate this to french good morning">"Translate this to French"
+                - "Good morning"</button>
+            <button class="command-btn" data-command="news">"News" - Get the latest news</button>
+            <button class="command-btn" data-command="translate this to japanese what is your name?">"Translate this to
+                Japanese" - "What is your name?"</button>
+            <button class="command-btn" data-command="open youtube">"Open YouTube" - Open YouTube</button>
+            <button class="command-btn" data-command="what is democracy">"What is democracy?" - Get the meaning of
+                "democracy"</button>
+            <button class="command-btn" data-command="translate this to arabic please help me">"Translate this to
+                Arabic" - "Please help me"</button>
+            <button class="command-btn" data-command="open google">"Open Google" - Open Google</button>
+            <button class="command-btn" data-command="who are you">"Who are you?" - Learn about the assistant</button>
+            <button class="command-btn" data-command="time">"Time" - Get the current time</button>
+            <button class="command-btn" data-command="search">"Search" - Search for something</button>
+            <button class="command-btn" data-command="set reminder">"Set Reminder" - Add a reminder</button>
+            <button class="command-btn" data-command="calculator">"Calculator" - Use the calculator</button>
+            <button class="command-btn" data-command="weather">"Weather" - Get weather updates</button>
+            <button class="command-btn" data-command="translate this to spanish how are you?">"Translate this to
+                Spanish" - "How are you?"</button>
+            <button class="command-btn" data-command="quote">"Quote" - Get an inspirational quote</button>
+            <button class="command-btn" data-command="joke">"Joke" - Hear a joke</button>
+            <button class="command-btn" data-command="open google maps">"Open Google Maps" - Open Google Maps</button>
+            <button class="command-btn" data-command="play music">"Play Music" - Play some tunes</button>
+            <button class="command-btn" data-command="open youtube">"Open YouTube" - Open YouTube</button>
+        </marquee>
+    </div>
+
+    <!-- Microphone Button -->
+    <img src="voice.gif" alt="voice" id="voice">
+    <button id="btn"><img src="mic.svg" alt="mic"><span id="content"> Click here to talk to me</span></button>
+
+    <!-- News Section -->
+    <div id="news-container">
+        <div id="news-header">
+            <span>Latest News</span>
+            <img id="refresh-icon" src="https://img.icons8.com/ios/452/synchronize.png" alt="refresh"
+                onclick="fetchNews()">
+        </div>
+        <ul id="news-list"></ul>
+    </div>
+
+    <div id="definition" style="color: aliceblue;">
+    </div>
+
+    <script>
+        let btn = document.querySelector("#btn");
+        let content = document.querySelector("#content");
+        let voice = document.querySelector("#voice");
+        let commands = document.querySelector("#commands");
+        let newsContainer = document.querySelector("#news-container");
+        let newsFrame = document.querySelector("#news-frame");
+
+
+        let lastFetchedIndex = 0; // Keep track of the last index of stories we fetched
+
+        // Fetch latest news from Hacker News API
+        async function fetchNews() {
+            try {
+                // Fetch the top stories from Hacker News
+                const response = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty');
+                const storyIds = await response.json();
+
+                // Change the range of stories that we fetch each time
+                const storiesPerBatch = 10;
+                const startIdx = lastFetchedIndex;
+                const endIdx = lastFetchedIndex + storiesPerBatch;
+                const nextBatch = storyIds.slice(startIdx, endIdx);
+
+                // Update the last fetched index for the next batch
+                lastFetchedIndex = endIdx;
+
+                // If we've reached the end of the story list, reset the index
+                if (lastFetchedIndex >= storyIds.length) {
+                    lastFetchedIndex = 0;
+                }
+
+                // Clear existing news
+                const newsList = document.getElementById('news-list');
+                newsList.innerHTML = '';
+
+                // Fetch details for each news item
+                for (let id of nextBatch) {
+                    const storyResponse = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`);
+                    const storyData = await storyResponse.json();
+
+                    // Create a list item with a link
+                    const li = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = storyData.url;
+                    link.target = "_blank";
+                    link.textContent = storyData.title;
+
+                    li.appendChild(link);
+                    newsList.appendChild(li);
+                }
+            } catch (error) {
+                console.error("Error fetching news:", error);
+                const newsList = document.getElementById('news-list');
+                newsList.innerHTML = '<li>Failed to load news. Please try again later.</li>';
+            }
+        }
+
+        // Call the function to load news when the page loads
+        window.onload = fetchNews;
+
+        function speak(text) {
+            let text_speak = new SpeechSynthesisUtterance(text);
+            text_speak.rate = 1;
+            text_speak.pitch = 1;
+            text_speak.volume = 1;
+            text_speak.lang = "en-US";
+            window.speechSynthesis.speak(text_speak);
+        }
+
+        function wishMe() {
+            let day = new Date();
+            let hours = day.getHours();
+            if (hours >= 0 && hours < 12) {
+                speak("Good Morning!");
+            } else if (hours >= 12 && hours < 16) {
+                speak("Good Afternoon!");
+            } else {
+                speak("Good Evening!");
+            }
+        }
+
+        let speechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = new speechRecognition();
+
+        recognition.onresult = (event) => {
+            let currentIndex = event.resultIndex;
+            let transcript = event.results[currentIndex][0].transcript;
+            content.innerText = transcript;
+            takeCommand(transcript.toLowerCase());
+        };
+
+        btn.addEventListener("click", () => {
+            recognition.start();
+            voice.style.display = "block";
+            btn.style.display = "none";
+        });
+
+        function takeCommand(message) {
+            voice.style.display = "none";
+            btn.style.display = "flex";
+
+            if (message.includes("hello") || message.includes("hey")) {
+                speak("Hello! How can I assist you?");
+            } else if (message.includes("who are you")) {
+                speak("I am your virtual assistant, here to help you.");
+            } else if (message.includes("open")) {
+                const appName = message.split("open ")[1];
+                speak(`Opening ${appName}...`);
+
+                // Check platform
+                const isAndroid = /Android/i.test(navigator.userAgent);
+                const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+                const isMobile = isAndroid || isIOS;
+
+                if (isMobile) {
+                    switch (appName.toLowerCase()) {
+                        case "whatsapp":
+                            if (isAndroid) {
+                                window.location.href = "intent://send#Intent;scheme=whatsapp;package=com.whatsapp;end";
+                            } else {
+                                window.location.href = "whatsapp://app";
+                            }
+                            break;
+                        case "facebook":
+                            if (isAndroid) {
+                                window.location.href = "intent://facebook.com/#Intent;scheme=https;package=com.facebook.katana;end";
+                            } else {
+                                window.location.href = "fb://";
+                            }
+                            break;
+                        case "instagram":
+                            if (isAndroid) {
+                                window.location.href = "intent://instagram.com/#Intent;scheme=https;package=com.instagram.android;end";
+                            } else {
+                                window.location.href = "instagram://app";
+                            }
+                            break;
+                        case "youtube":
+                            if (isAndroid) {
+                                window.location.href = "intent://youtube.com/#Intent;scheme=https;package=com.google.android.youtube;end";
+                            } else {
+                                window.location.href = "youtube://";
+                            }
+                            break;
+                        case "google maps":
+                            if (isAndroid) {
+                                window.location.href = "intent://maps.google.com/#Intent;scheme=https;package=com.google.android.apps.maps;end";
+                            } else {
+                                window.location.href = "comgooglemaps://";
+                            }
+                            break;
+                        case "gmail":
+                            if (isAndroid) {
+                                window.location.href = "intent://mail.google.com/#Intent;scheme=https;package=com.google.android.gm;end";
+                            } else {
+                                window.location.href = "googlegmail:///";
+                            }
+                            break;
+                        case "camera":
+                            if (isAndroid) {
+                                window.location.href = "intent://capture#Intent;scheme=camera;package=com.android.camera;end";
+                            } else {
+                                window.location.href = "photos-redirect://";
+                            }
+                            break;
+                        case "gallery":
+                        case "photos":
+                        case "album":
+                            if (isAndroid) {
+                                window.location.href = "intent://media/internal/images/#Intent;scheme=content;package=com.google.android.apps.photos;end";
+                            } else {
+                                window.location.href = "photos://";
+                            }
+                            break;
+                        case "twitter":
+                            if (isAndroid) {
+                                window.location.href = "intent://twitter.com/#Intent;scheme=https;package=com.twitter.android;end";
+                            } else {
+                                window.location.href = "twitter://timeline";
+                            }
+                            break;
+                        case "telegram":
+                            if (isAndroid) {
+                                window.location.href = "intent://resolve/#Intent;scheme=tg;package=org.telegram.messenger;end";
+                            } else {
+                                window.location.href = "tg://resolve";
+                            }
+                            break;
+                        case "spotify":
+                            if (isAndroid) {
+                                window.location.href = "intent://open.spotify.com/#Intent;scheme=https;package=com.spotify.music;end";
+                            } else {
+                                window.location.href = "spotify://";
+                            }
+                            break;
+                        case "tiktok":
+                            if (isAndroid) {
+                                window.location.href = "intent://vm.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;end";
+                            } else {
+                                window.location.href = "tiktok://";
+                            }
+                            break;
+                        case "snapchat":
+                            if (isAndroid) {
+                                window.location.href = "intent://snap.com/#Intent;scheme=https;package=com.snapchat.android;end";
+                            } else {
+                                window.location.href = "snapchat://";
+                            }
+                            break;
+                        case "settings":
+                            if (isAndroid) {
+                                window.location.href = "intent://settings/#Intent;scheme=android;package=com.android.settings;end";
+                            } else {
+                                window.location.href = "app-settings://";
+                            }
+                            break;
+                        case "messages":
+                            if (isAndroid) {
+                                window.location.href = "intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_MESSAGING;end";
+                            } else {
+                                window.location.href = "messages://";
+                            }
+                            break;
+                        case "calculator":
+                            if (isAndroid) {
+                                window.location.href = "intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_CALCULATOR;end";
+                            } else {
+                                window.location.href = "calc://";
+                            }
+                            break;
+                        case "wifi":
+                            if (isAndroid) {
+                                window.location.href = "intent://settings/wifi#Intent;scheme=android;package=com.android.settings;end";
+                            } else {
+                                window.location.href = "App-Prefs:root=WIFI";
+                            }
+                            break;
+                        case "bluetooth":
+                            if (isAndroid) {
+                                window.location.href = "intent://settings/bluetooth#Intent;scheme=android;package=com.android.settings;end";
+                            } else {
+                                window.location.href = "App-Prefs:root=Bluetooth";
+                            }
+                            break;
+                        case "video":
+                            if (isAndroid) {
+                                window.location.href = "intent://capture#Intent;action=android.media.action.VIDEO_CAPTURE;end";
+                            } else {
+                                window.location.href = "photos-redirect://";
+                            }
+                            break;
+                        // Other apps with standard deep links
+                        case "netflix":
+                            window.location.href = "netflix://";
+                            break;
+                        case "amazon":
+                            window.location.href = "amazon://";
+                            break;
+                        case "pinterest":
+                            window.location.href = "pinterest://";
+                            break;
+                        case "reddit":
+                            window.location.href = "reddit://";
+                            break;
+                        case "skype":
+                            window.location.href = "skype://";
+                            break;
+                        case "zoom":
+                            window.location.href = "zoomus://";
+                            break;
+                        case "discord":
+                            window.location.href = "discord://";
+                            break;
+                        case "linkedin":
+                            window.location.href = "linkedin://";
+                            break;
+                        default:
+                            // If the app is not in the list, open it in a browser
+                            window.location.href = `https://${appName.toLowerCase()}.com/`;
+                    }
+                } else {
+                    window.location.href = `https://${appName.toLowerCase()}.com/`;
+                }
+            } else if (message.includes("weather")) {
+                speak("Fetching the weather...");
+                window.open("https://www.weather.com/", "_blank");
+            } else if (message.includes("news")) {
+                speak("Fetching the latest news...");
+                commands.style.display = "none";
+                newsContainer.style.display = "block";
+            } else if (message.includes("time")) {
+                let time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                speak(`The current time is ${time}`);
+            } else if (message.includes("date")) {
+                let date = new Date().toLocaleDateString([], { day: "numeric", month: "long", year: "numeric" });
+                speak(`Today's date is ${date}`);
+            } else if (message.includes("set reminder")) {
+                speak("Sure! What should I remind you about?");
+                setTimeout(() => {
+                    speak("This feature is under development, but I’ll remember your command for next time!");
+                }, 2000);
+            } else if (message.includes("thank you")) {
+                speak("You're welcome!");
+            } else if (message.includes("refresh") || message.includes("reload")) {
+                speak("Refreshing the page...");
+                location.reload(); // Reload the current page
+            } else if (message.startsWith("translate this to")) {
+                // Extract the target language and the text
+                const parts = message.split("translate this to ");
+                const targetLanguage = parts[1]?.split(" ")[0]?.trim().toLowerCase(); // Get the first word after 'translate this to'
+                const textToTranslate = parts[1]?.replace(targetLanguage, "").trim(); // The rest is the text to translate
+
+                if (!targetLanguage || !textToTranslate) {
+                    speak("Please specify both the language and the text to translate. For example, 'translate this to Spanish how are you?'");
+                    return;
+                }
+
+                // Language codes for translation
+                const languageCodes = {
+                    spanish: "es",
+                    arabic: "ar",
+                    chinese: "zh",
+                    japanese: "ja",
+                    korean: "ko",
+                    russian: "ru",
+                    french: "fr",
+                    german: "de",
+                    italian: "it",
+                    hindi: "hi",
+                    urdu: "ur",
+                    english: "en",
+                };
+
+                const languageCode = languageCodes[targetLanguage];
+                if (!languageCode) {
+                    speak(`Sorry, I don't support translation to ${targetLanguage} yet. Supported languages are: ${Object.keys(languageCodes).join(", ")}.`);
+                    return;
+                }
+
+                // Call the translation API (using LibreTranslate or MyMemory)
+                fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textToTranslate)}&langpair=en|${languageCode}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        const translatedText = data.responseData.translatedText;
+
+                        // Speak and display the translation
+                        speak(`The translation is: ${translatedText}`);
+                        document.getElementById("definition").innerHTML = `
+        <div class="card">
+          <h3>🌍 Translation Result:</h3>
+          <p><strong>Original:</strong> ${textToTranslate}</p>
+          <p><strong>Translated (${targetLanguage}):</strong> ${translatedText}</p>
+        </div>`;
+                    })
+                    .catch((error) => {
+                        console.error("Translation API error:", error);
+                        speak("Sorry, there was an error translating the text. Please try again.");
+                        document.getElementById("definition").innerHTML = `
+        <div class="card">
+          <h3>❌ Translation Error:</h3>
+          <p>Sorry, there was an error. Please try again later.</p>
+        </div>`;
+                    });
+            }
+            else if (message.includes("what is")) {
+                // Extract the word from the message
+                const word = message.split(" ").pop().toLowerCase();
+
+                // Use an external API to fetch the meaning
+                fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error("Word not found");
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        // Parse and display the meaning
+                        const meanings = data[0].meanings.map((meaning) => {
+                            return `<p><strong>${meaning.partOfSpeech}:</strong> ${meaning.definitions[0].definition}</p>`;
+                        }).join("");
+
+                        // Speak and display the result
+                        speak(`${meanings}`);
+                        document.getElementById("definition").innerHTML = `
+            <div class="card">
+                <h3>📖 Definition of ${word.toUpperCase()}:</h3>
+                ${meanings}
+            </div>`;
+                    })
+                    .catch(() => {
+                        // Handle errors (word not found)
+                        speak(`Sorry, I couldn't find the meaning of ${word}.`);
+                        document.getElementById("definition").innerHTML = `
+            <div class="card">
+                <h3>❌ Word not found:</h3>
+                <p>The word "${word}" could not be found in the dictionary. Please try another word.</p>
+            </div>`;
+                    });
+            }   
+        }
+
+        // Auto wish on load
+        window.addEventListener('load', () => {
+            wishMe();
+        });
+
+        // Adding functionality for command buttons to trigger the same as speaking
+        document.querySelectorAll('.command-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                let command = button.getAttribute('data-command');
+                takeCommand(command.toLowerCase());
+            });
+        });
+
+        // Function to reset the interface back to commands
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                newsContainer.style.display = "none";
+                commands.style.display = "block";
+                speak("Back to commands menu.");
+            }
+        });
+    </script>
+</body>
+
+</html>
